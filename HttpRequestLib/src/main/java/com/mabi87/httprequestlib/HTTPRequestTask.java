@@ -27,8 +27,16 @@ import org.json.JSONException;
 
 import java.io.IOException;
 
+ /*
+  * HTTPRequestTask Class
+  * Use with HTTPRequestHelper
+  * JSONException usually means error on server and IOException usually means error on network in my application.
+  * And methods in HTTPRequestHelper throw JSONException and IOException.
+  * So when you use method in HTTPRequestHelper, this class is helpful.
+  */
 public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>{
 
+    // Working variables
 	private boolean hasNetworkError = false;
 	private boolean hasServerError = false;
 
@@ -57,7 +65,10 @@ public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTas
 		}
 	}
 
+    // this method work when catch json exception
 	protected void onServerError() { }
+
+    // this method work when catch io exception
 	protected void onNetworkError() { }
 
 	protected abstract Result doInBackgroundRequest(Params... params) throws IOException, JSONException;

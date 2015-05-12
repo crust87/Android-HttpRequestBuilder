@@ -39,10 +39,15 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-
+/*
+ * HTTPRequestHelper Class
+ */
 public class HTTPRequestHelper {
 	private static final String TAG = "HTTPRequestHelper";
-	
+
+    // post
+    // pPath : url
+    // pNameValuePairs : http parameter
 	public static JSONObject post(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, JSONException {
 		URL url = new URL(pPath);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -64,6 +69,7 @@ public class HTTPRequestHelper {
 		conn.connect();
 
 		StringBuilder responseStringBuilder = new StringBuilder();
+
 		if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
 			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
 			String stringLine = null;
@@ -91,10 +97,15 @@ public class HTTPRequestHelper {
 		return json;
 	}
 
+    // get
+    // pPath : url
+    // pNameValuePairs : http parameter
 	public static JSONObject get(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, JSONException {
 		return get(pPath + "?" + getQuery(pNameValuePairs));
 	}
 
+    // get
+    // pPath : url
 	public static JSONObject get(String pPath) throws IOException, JSONException {
 		URL url = new URL(pPath);
 		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
@@ -136,6 +147,7 @@ public class HTTPRequestHelper {
 		return json;
 	}
 
+    // this method create string as http parameters
 	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
 		StringBuilder result = new StringBuilder();
 		boolean first = true;

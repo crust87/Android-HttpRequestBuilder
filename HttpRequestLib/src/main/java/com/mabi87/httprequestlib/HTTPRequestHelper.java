@@ -24,8 +24,6 @@ package com.mabi87.httprequestlib;
 import android.util.Log;
 
 import org.apache.http.NameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -39,120 +37,178 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.List;
 
-/*
- * HTTPRequestHelper Class
- */
 public class HTTPRequestHelper {
 	private static final String TAG = "HTTPRequestHelper";
 
-    // post
-    // pPath : url
-    // pNameValuePairs : http parameter
-	public static JSONObject post(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, JSONException {
-		URL url = new URL(pPath);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		JSONObject json = new JSONObject();
+	// Attributes
+	private int mReadTimeoutMillis;
+	private int mConnectTimeoutMillis;
 
-		conn.setReadTimeout(10000);
-		conn.setConnectTimeout(15000);
-		conn.setRequestMethod("POST");
-		conn.setDoInput(true);
-		conn.setDoOutput(true);
-
-		OutputStream os = conn.getOutputStream();
-		BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-		writer.write(getQuery(pNameValuePairs));
-		writer.flush();
-		writer.close();
-		os.close();
-
-		conn.connect();
-
-		StringBuilder responseStringBuilder = new StringBuilder();
-
-		if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String stringLine = null;
-			
-			while ((stringLine = bufferedReader.readLine()) != null) {
-				responseStringBuilder.append(stringLine + '\n');
-			}
-			
-			bufferedReader.close();
-		} else {
-			BufferedReader bufferedReader = new BufferedReader( new InputStreamReader(conn.getErrorStream()));
-			String stringLine = null;
-			
-			while ((stringLine = bufferedReader.readLine()) != null) {
-				responseStringBuilder.append(stringLine + '\n');
-			}
-			
-			bufferedReader.close();
-		}
-		
-		conn.disconnect();
-
-		Log.d(TAG, "HTTPRequestHelper post : " + pPath + " " + responseStringBuilder.toString());
-		json = new JSONObject(responseStringBuilder.toString());
-		return json;
+	public HTTPRequestHelper() {
+		mReadTimeoutMillis = 10000;
+		mConnectTimeoutMillis = 15000;
 	}
 
-    // get
-    // pPath : url
-    // pNameValuePairs : http parameter
-	public static JSONObject get(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, JSONException {
+	/**
+	 * @param pReadTimeoutMillis
+	 * 				the millisecond in integer.
+	 * @return instance
+	 */
+	public HTTPRequestHelper setReadTimeoutMillis(int pReadTimeoutMillis) {
+		mReadTimeoutMillis = pReadTimeoutMillis;
+
+		return this;
+	}
+
+	/**
+	 * @param pConnectTimeoutMillis
+	 * 				the millisecond in integer.
+	 * @return instance
+	 */
+	public HTTPRequestHelper setConnectTimeoutMillis(int pConnectTimeoutMillis) {
+		mConnectTimeoutMillis = pConnectTimeoutMillis;
+
+		return this;
+	}
+
+	/**
+	 * @param pPath
+	 * 				the string url of web server page.
+	 * @param pNameValuePairs
+	 * 				the NameValuePare List of http parameter.
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String post(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, HTTPRequestException {
+		URL url = new URL(pPath);
+		HttpURLConnection lConnection = (HttpURLConnection) url.openConnection();
+
+		lConnection.setReadTimeout(mReadTimeoutMillis);
+		lConnection.setConnectTimeout(mConnectTimeoutMillis);
+		lConnection.setRequestMethod("POST");
+		lConnection.setDoInput(true);
+		lConnection.setDoOutput(true);
+
+		OutputStream lOutStream = lConnection.getOutputStream();
+		BufferedWriter lWriter = new BufferedWriter(new OutputStreamWriter(lOutStream, "UTF-8"));
+		lWriter.write(getQuery(pNameValuePairs));
+		lWriter.flush();
+		lWriter.close();
+		lOutStream.close();
+
+		lConnection.connect();
+
+		StringBuilder lResponseStringBuilder = new StringBuilder();
+
+		boolean isSuccess = readPage(lConnection, lResponseStringBuilder);
+
+		lConnection.disconnect();
+
+		Log.d(TAG, "HTTPRequestHelper post : " + pPath + " " + lResponseStringBuilder.toString());
+
+		if(isSuccess) {
+			return lResponseStringBuilder.toString();
+		} else {
+			throw new HTTPRequestException(lResponseStringBuilder.toString());
+		}
+	}
+
+	/**
+	 * @param pPath
+	 * 				the string url of web server page.
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String get(String pPath) throws IOException, HTTPRequestException {
+		URL url = new URL(pPath);
+		HttpURLConnection lConnection = (HttpURLConnection) url.openConnection();
+
+		lConnection.setReadTimeout(mReadTimeoutMillis);
+		lConnection.setConnectTimeout(mConnectTimeoutMillis);
+		lConnection.setRequestMethod("GET");
+		lConnection.setDoInput(true);
+
+		lConnection.connect();
+
+		StringBuilder lResponseStringBuilder = new StringBuilder();
+
+		boolean isSuccess = readPage(lConnection, lResponseStringBuilder);
+
+		lConnection.disconnect();
+
+		Log.d(TAG, "HTTPRequestHelper get : " + pPath + " " + lResponseStringBuilder.toString());
+
+		if(isSuccess) {
+			return lResponseStringBuilder.toString();
+		} else {
+			throw new HTTPRequestException(lResponseStringBuilder.toString());
+		}
+	}
+
+	/**
+	 * @param pPath
+	 * 				the string url of web server page.
+	 * @param pNameValuePairs
+	 * 				the NameValuePare List of http parameter.
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String get(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, HTTPRequestException {
 		return get(pPath + "?" + getQuery(pNameValuePairs));
 	}
 
-    // get
-    // pPath : url
-	public static JSONObject get(String pPath) throws IOException, JSONException {
-		URL url = new URL(pPath);
-		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-		JSONObject json = new JSONObject();
+	/**
+	 * @param pConnection
+	 * 				the HttpURLConnection of web server page.
+	 * @param pResponseStringBuilder
+	 * 				the response StringBuilder for store connection response
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @return if response cod is 200
+	 */
+	public boolean readPage(HttpURLConnection pConnection, StringBuilder pResponseStringBuilder) throws IOException {
+		BufferedReader lBufferedReader = null;
+		String lLine = null;
+		boolean isSuccess = false;
 
-		conn.setReadTimeout(10000);
-		conn.setConnectTimeout(15000);
-		conn.setRequestMethod("GET");
-		conn.setDoInput(true);
+		isSuccess = pConnection.getResponseCode() == HttpURLConnection.HTTP_OK;
 
-		conn.connect();
-
-		StringBuilder responseStringBuilder = new StringBuilder();
-		if (conn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-			String stringLine = null;
-
-			while ((stringLine = bufferedReader.readLine()) != null) {
-				responseStringBuilder.append(stringLine + '\n');
-			}
-
-			bufferedReader.close();
+		if(isSuccess) {
+			lBufferedReader= new BufferedReader(new InputStreamReader(pConnection.getInputStream()));
 		} else {
-			BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
-			String stringLine = null;
-
-			while ((stringLine = bufferedReader.readLine()) != null) {
-				responseStringBuilder.append(stringLine + '\n');
-			}
-
-			bufferedReader.close();
+			lBufferedReader= new BufferedReader(new InputStreamReader(pConnection.getErrorStream()));
 		}
 
-		conn.disconnect();
+		while ((lLine = lBufferedReader.readLine()) != null) {
+			pResponseStringBuilder.append(lLine + '\n');
+		}
 
-		Log.d(TAG, "HTTPRequestHelper get : " + pPath + " " + responseStringBuilder.toString());
-		json = new JSONObject(responseStringBuilder.toString());
+		lBufferedReader.close();
 
-		return json;
+		return isSuccess;
 	}
 
-    // this method create string as http parameters
-	private static String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
+	/**
+	 * @param pNameValuePairs
+	 * 				the NameValuePare List of http parameter.
+	 * @throws UnsupportedEncodingException
+	 * 				throws from URLEncoder.encode()
+	 * @return the string of http parameter format
+	 */
+	private String getQuery(List<NameValuePair> pNameValuePairs) throws UnsupportedEncodingException {
 		StringBuilder result = new StringBuilder();
 		boolean first = true;
 
-		for (NameValuePair pair : params) {
+		for (NameValuePair pair : pNameValuePairs) {
 			if (first) {
 				first = false;
 			} else {

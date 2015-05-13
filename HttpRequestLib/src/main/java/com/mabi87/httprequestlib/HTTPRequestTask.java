@@ -23,54 +23,54 @@ package com.mabi87.httprequestlib;
 
 import android.os.AsyncTask;
 
-import org.json.JSONException;
-
 import java.io.IOException;
 
- /*
-  * HTTPRequestTask Class
-  * Use with HTTPRequestHelper
-  * JSONException usually means error on server and IOException usually means error on network in my application.
-  * And methods in HTTPRequestHelper throw JSONException and IOException.
-  * So when you use method in HTTPRequestHelper, this class is helpful.
-  */
+
 public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>{
 
-    // Working variables
-	private boolean hasNetworkError = false;
-	private boolean hasServerError = false;
+	// Working variablesprivate boolean hasNetworkError = false;
+	private IOException mIOException = null;
+	private HTTPRequestException mHTTPRequestException = null;
 
 	@Override
-	protected Result doInBackground(Params... params) {
+	protected final Result doInBackground(Params... params) {
 		try {
 			return doInBackgroundRequest(params);
 		} catch (IOException e) {
-			hasNetworkError = true;
+			mIOException = e;
 			return null;
-		} catch (JSONException e) {
-			hasServerError = true;
+		} catch (HTTPRequestException e) {
+			mHTTPRequestException = e;
 			return null;
 		}
 
 	}
 
-	@Override
-	protected void onPostExecute(Result result) {
-		if(hasServerError) {
-			onServerError();
-		}
+	 @Override
+	 protected void onPostExecute(Result result) {
+		 if(mHTTPRequestException != null) {
+			 onServerError(mHTTPRequestException);
+			 mHTTPRequestException = null;
+		 }
 
-		if(hasNetworkError) {
-			onNetworkError();
-		}
-	}
+		 if(mIOException != null) {
+			 onNetworkError(mIOException);
+			 mIOException = null;
+		 }
+	 }
 
-    // this method work when catch json exception
-	protected void onServerError() { }
+	 /**
+	  * this method work when catch json exception
+	  * @param pHTTPRequestException
+	  */
+	 protected void onServerError(HTTPRequestException pHTTPRequestException) { }
 
-    // this method work when catch io exception
-	protected void onNetworkError() { }
+	 /**
+	  * this method work when catch io exception
+	  * @param pIOException
+	  */
+	 protected void onNetworkError(IOException pIOException) { }
 
-	protected abstract Result doInBackgroundRequest(Params... params) throws IOException, JSONException;
+	 protected abstract Result doInBackgroundRequest(Params... params) throws IOException, HTTPRequestException;
 
 }

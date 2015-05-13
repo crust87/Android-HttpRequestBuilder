@@ -27,12 +27,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.mabi87.httprequestlib.HTTPRequestException;
 import com.mabi87.httprequestlib.HTTPRequestHelper;
 import com.mabi87.httprequestlib.HTTPRequestTask;
 
 import org.apache.http.NameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -66,11 +65,31 @@ public class MainActivity extends ActionBarActivity {
         mButtonPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HTTPRequestTask<Void, Void, JSONObject>() {
+                new HTTPRequestTask<Void, Void, String>() {
                     @Override
-                    protected JSONObject doInBackgroundRequest(Void... params) throws IOException, JSONException {
+                    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
                         ArrayList<NameValuePair> lNameValuePare = new ArrayList<NameValuePair>();
-                        return HTTPRequestHelper.post("", lNameValuePare);
+                        HTTPRequestHelper lHelper = new HTTPRequestHelper();
+                        return lHelper.post("", lNameValuePare);
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+
+                        if(s != null) {
+                            mTextResult.setText(s);
+                        }
+                    }
+
+                    @Override
+                    protected void onNetworkError(IOException pIOException) {
+                        mTextResult.setText(pIOException.getMessage());
+                    }
+
+                    @Override
+                    protected void onServerError(HTTPRequestException pHTTPRequestException) {
+                        mTextResult.setText(pHTTPRequestException.getMessage());
                     }
                 }.execute();
             }
@@ -79,11 +98,31 @@ public class MainActivity extends ActionBarActivity {
         mButtonGet1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HTTPRequestTask<Void, Void, JSONObject>() {
+                new HTTPRequestTask<Void, Void, String>() {
                     @Override
-                    protected JSONObject doInBackgroundRequest(Void... params) throws IOException, JSONException {
+                    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
                         ArrayList<NameValuePair> lNameValuePare = new ArrayList<NameValuePair>();
-                        return HTTPRequestHelper.get("", lNameValuePare);
+                        HTTPRequestHelper lHelper = new HTTPRequestHelper();
+                        return lHelper.get("", lNameValuePare);
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+
+                        if(s != null) {
+                            mTextResult.setText(s);
+                        }
+                    }
+
+                    @Override
+                    protected void onNetworkError(IOException pIOException) {
+                        mTextResult.setText(pIOException.getMessage());
+                    }
+
+                    @Override
+                    protected void onServerError(HTTPRequestException pHTTPRequestException) {
+                        mTextResult.setText(pHTTPRequestException.getMessage());
                     }
                 }.execute();
             }
@@ -92,10 +131,30 @@ public class MainActivity extends ActionBarActivity {
         mButtonGet2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new HTTPRequestTask<Void, Void, JSONObject>() {
+                new HTTPRequestTask<Void, Void, String>() {
                     @Override
-                    protected JSONObject doInBackgroundRequest(Void... params) throws IOException, JSONException {
-                        return HTTPRequestHelper.get("");
+                    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
+                        HTTPRequestHelper lHelper = new HTTPRequestHelper();
+                        return lHelper.setConnectTimeoutMillis(1000).setReadTimeoutMillis(1000).get("");
+                    }
+
+                    @Override
+                    protected void onPostExecute(String s) {
+                        super.onPostExecute(s);
+
+                        if(s != null) {
+                            mTextResult.setText(s);
+                        }
+                    }
+
+                    @Override
+                    protected void onNetworkError(IOException pIOException) {
+                        mTextResult.setText(pIOException.getMessage());
+                    }
+
+                    @Override
+                    protected void onServerError(HTTPRequestException pHTTPRequestException) {
+                        mTextResult.setText(pHTTPRequestException.getMessage());
                     }
                 }.execute();
             }

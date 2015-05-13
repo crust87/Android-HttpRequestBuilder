@@ -24,6 +24,7 @@ package com.mabi87.httprequestlib;
 import android.util.Log;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -35,46 +36,38 @@ import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.List;
 
 public class HTTPRequestHelper {
 	private static final String TAG = "HTTPRequestHelper";
 
+	// Components
+	private ArrayList<NameValuePair> mParameters;
+
 	// Attributes
+	private String mPath;
 	private int mReadTimeoutMillis;
 	private int mConnectTimeoutMillis;
 
 	public HTTPRequestHelper() {
+		mParameters = new ArrayList<NameValuePair>();
+
+		init();
+	}
+
+	public void init() {
+		mParameters.clear();
+
+		mPath = "";
 		mReadTimeoutMillis = 10000;
 		mConnectTimeoutMillis = 15000;
 	}
 
 	/**
-	 * @param pReadTimeoutMillis
-	 * 				the millisecond in integer.
-	 * @return instance
-	 */
-	public HTTPRequestHelper setReadTimeoutMillis(int pReadTimeoutMillis) {
-		mReadTimeoutMillis = pReadTimeoutMillis;
-
-		return this;
-	}
-
-	/**
-	 * @param pConnectTimeoutMillis
-	 * 				the millisecond in integer.
-	 * @return instance
-	 */
-	public HTTPRequestHelper setConnectTimeoutMillis(int pConnectTimeoutMillis) {
-		mConnectTimeoutMillis = pConnectTimeoutMillis;
-
-		return this;
-	}
-
-	/**
-	 * @param pPath
+	 * @param path
 	 * 				the string url of web server page.
-	 * @param pNameValuePairs
+	 * @param parameters
 	 * 				the NameValuePare List of http parameter.
 	 * @throws IOException
 	 * 				throws from HttpURLConnection method.
@@ -82,8 +75,37 @@ public class HTTPRequestHelper {
 	 * 				if responseCode is not 200
 	 * @return the string of http page
 	 */
-	public String post(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, HTTPRequestException {
-		URL url = new URL(pPath);
+	public String post(String path, List<NameValuePair> parameters) throws IOException, HTTPRequestException {
+		mPath = path;
+		mParameters.addAll(parameters);
+
+		return post();
+	}
+
+	/**
+	 * @param path
+	 * 				the string url of web server page.
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String post(String path) throws IOException, HTTPRequestException {
+		mPath = path;
+
+		return post();
+	}
+
+	/**
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String post() throws IOException, HTTPRequestException {
+		URL url = new URL(mPath);
 		HttpURLConnection lConnection = (HttpURLConnection) url.openConnection();
 
 		lConnection.setReadTimeout(mReadTimeoutMillis);
@@ -94,7 +116,7 @@ public class HTTPRequestHelper {
 
 		OutputStream lOutStream = lConnection.getOutputStream();
 		BufferedWriter lWriter = new BufferedWriter(new OutputStreamWriter(lOutStream, "UTF-8"));
-		lWriter.write(getQuery(pNameValuePairs));
+		lWriter.write(getQuery(mParameters));
 		lWriter.flush();
 		lWriter.close();
 		lOutStream.close();
@@ -107,7 +129,7 @@ public class HTTPRequestHelper {
 
 		lConnection.disconnect();
 
-		Log.d(TAG, "HTTPRequestHelper post : " + pPath + " " + lResponseStringBuilder.toString());
+		Log.d(TAG, "HTTPRequestHelper post : " + mPath + " " + lResponseStringBuilder.toString());
 
 		if(isSuccess) {
 			return lResponseStringBuilder.toString();
@@ -117,7 +139,29 @@ public class HTTPRequestHelper {
 	}
 
 	/**
-	 * @param pPath
+	 * @param path
+	 * 				the string url of web server page.
+	 * @param parameters
+	 * 				the NameValuePare List of http parameter.
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String get(String path, List<NameValuePair> parameters) throws IOException, HTTPRequestException {
+		mPath = path;
+		mParameters.addAll(parameters);
+
+		if(mParameters.size() > 0) {
+			return get(mPath + "?" + getQuery(mParameters));
+		} else {
+			return get(mPath);
+		}
+	}
+
+	/**
+	 * @param path
 	 * 				the string url of web server page.
 	 * @throws IOException
 	 * 				throws from HttpURLConnection method.
@@ -125,8 +169,20 @@ public class HTTPRequestHelper {
 	 * 				if responseCode is not 200
 	 * @return the string of http page
 	 */
-	public String get(String pPath) throws IOException, HTTPRequestException {
-		URL url = new URL(pPath);
+	public String get(String path) throws IOException, HTTPRequestException {
+		mPath = path;
+		return get();
+	}
+
+	/**
+	 * @throws IOException
+	 * 				throws from HttpURLConnection method.
+	 * @throws HTTPRequestException
+	 * 				if responseCode is not 200
+	 * @return the string of http page
+	 */
+	public String get() throws IOException, HTTPRequestException {
+		URL url = new URL(mPath);
 		HttpURLConnection lConnection = (HttpURLConnection) url.openConnection();
 
 		lConnection.setReadTimeout(mReadTimeoutMillis);
@@ -142,7 +198,7 @@ public class HTTPRequestHelper {
 
 		lConnection.disconnect();
 
-		Log.d(TAG, "HTTPRequestHelper get : " + pPath + " " + lResponseStringBuilder.toString());
+		Log.d(TAG, "HTTPRequestHelper get : " + mPath + " " + lResponseStringBuilder.toString());
 
 		if(isSuccess) {
 			return lResponseStringBuilder.toString();
@@ -152,44 +208,29 @@ public class HTTPRequestHelper {
 	}
 
 	/**
-	 * @param pPath
-	 * 				the string url of web server page.
-	 * @param pNameValuePairs
-	 * 				the NameValuePare List of http parameter.
-	 * @throws IOException
-	 * 				throws from HttpURLConnection method.
-	 * @throws HTTPRequestException
-	 * 				if responseCode is not 200
-	 * @return the string of http page
-	 */
-	public String get(String pPath, List<NameValuePair> pNameValuePairs) throws IOException, HTTPRequestException {
-		return get(pPath + "?" + getQuery(pNameValuePairs));
-	}
-
-	/**
-	 * @param pConnection
+	 * @param connection
 	 * 				the HttpURLConnection of web server page.
-	 * @param pResponseStringBuilder
+	 * @param responseStringBuilder
 	 * 				the response StringBuilder for store connection response
 	 * @throws IOException
 	 * 				throws from HttpURLConnection method.
 	 * @return if response cod is 200
 	 */
-	public boolean readPage(HttpURLConnection pConnection, StringBuilder pResponseStringBuilder) throws IOException {
+	public boolean readPage(HttpURLConnection connection, StringBuilder responseStringBuilder) throws IOException {
 		BufferedReader lBufferedReader = null;
 		String lLine = null;
 		boolean isSuccess = false;
 
-		isSuccess = pConnection.getResponseCode() == HttpURLConnection.HTTP_OK;
+		isSuccess = connection.getResponseCode() == HttpURLConnection.HTTP_OK;
 
 		if(isSuccess) {
-			lBufferedReader= new BufferedReader(new InputStreamReader(pConnection.getInputStream()));
+			lBufferedReader= new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		} else {
-			lBufferedReader= new BufferedReader(new InputStreamReader(pConnection.getErrorStream()));
+			lBufferedReader= new BufferedReader(new InputStreamReader(connection.getErrorStream()));
 		}
 
 		while ((lLine = lBufferedReader.readLine()) != null) {
-			pResponseStringBuilder.append(lLine + '\n');
+			responseStringBuilder.append(lLine + '\n');
 		}
 
 		lBufferedReader.close();
@@ -198,17 +239,17 @@ public class HTTPRequestHelper {
 	}
 
 	/**
-	 * @param pNameValuePairs
+	 * @param parameter
 	 * 				the NameValuePare List of http parameter.
 	 * @throws UnsupportedEncodingException
 	 * 				throws from URLEncoder.encode()
 	 * @return the string of http parameter format
 	 */
-	private String getQuery(List<NameValuePair> pNameValuePairs) throws UnsupportedEncodingException {
+	private String getQuery(List<NameValuePair> parameter) throws UnsupportedEncodingException {
 		StringBuilder result = new StringBuilder();
 		boolean first = true;
 
-		for (NameValuePair pair : pNameValuePairs) {
+		for (NameValuePair pair : parameter) {
 			if (first) {
 				first = false;
 			} else {
@@ -221,6 +262,63 @@ public class HTTPRequestHelper {
 		}
 
 		return result.toString();
+	}
+
+	/**
+	 * @param parameters
+	 * 				the list of parameters.
+	 * @return instance
+	 */
+	public HTTPRequestHelper putParameter(List<NameValuePair> parameters) {
+		mParameters.addAll(parameters);
+
+		return this;
+	}
+
+	/**
+	 * @param name
+	 * 				the key of parameter.
+	 * @param value
+	 * 				the value of parameter.
+	 * @return instance
+	 */
+	public HTTPRequestHelper putParameter(String name, String value) {
+		mParameters.add(new BasicNameValuePair(name, value));
+
+		return this;
+	}
+
+	/**
+	 * @param path
+	 * 				the string url of web server page.
+	 * @return instance
+	 */
+	public HTTPRequestHelper setPath(String path) {
+		mPath = path;
+
+		return this;
+	}
+
+	/**
+	 * @param readTimeoutMillis
+	 * 				the millisecond in integer.
+	 * @return instance
+	 */
+	public HTTPRequestHelper setReadTimeoutMillis(int readTimeoutMillis) {
+		mReadTimeoutMillis = readTimeoutMillis;
+
+		return this;
+	}
+
+	/**
+	 * @param connectTimeoutMillis
+	 * 				the millisecond in integer.
+	 * @return instance
+	 */
+	public HTTPRequestHelper setConnectTimeoutMillis(int connectTimeoutMillis) {
+		mConnectTimeoutMillis = connectTimeoutMillis;
+
+		return this;
 	}
 
 }

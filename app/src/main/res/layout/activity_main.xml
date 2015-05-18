@@ -6,27 +6,91 @@
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
     android:orientation="vertical">
 
-    <Button
-        android:layout_width="120dp"
+    <EditText
+        android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:text="Post"
-        android:id="@+id/buttonPost" />
+        android:hint="type url"
+        android:text="http://192.168.123.135:8000"
+        android:id="@+id/inputUrl" />
 
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="48dp"
-        android:text="Get1"
-        android:id="@+id/buttonGet1" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-    <Button
-        android:layout_width="120dp"
-        android:layout_height="48dp"
-        android:text="Get2"
-        android:id="@+id/buttonGet2" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="key"
+            android:layout_weight="1"
+            android:id="@+id/inputKey" />
+        <EditText
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="value"
+            android:layout_weight="1"
+            android:id="@+id/inputValue" />
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="add"
+            android:layout_weight="1"
+            android:onClick="onButtonAddClicked"
+            android:id="@+id/buttonAdd" />
+    </LinearLayout>
 
-    <TextView
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <RadioGroup
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/radioGroupMethod"
+            android:layout_weight="1" >
+
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="post"
+                android:checked="true"
+                android:id="@+id/radioPost" />
+            <RadioButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="get"
+                android:id="@+id/radioGet" />
+        </RadioGroup>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="send"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:onClick="onButtonSendClicked"
+            android:id="@+id/buttonSend" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="clean"
+            android:layout_weight="1"
+            android:layout_gravity="center_vertical"
+            android:onClick="onButtonCleanClicked"
+            android:id="@+id/buttonClean" />
+    </LinearLayout>
+
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/textResult"
-        android:background="#ffddff" />
+        android:background="#ffddff" >
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/textResult" />
+    </ScrollView>
+
 </LinearLayout>

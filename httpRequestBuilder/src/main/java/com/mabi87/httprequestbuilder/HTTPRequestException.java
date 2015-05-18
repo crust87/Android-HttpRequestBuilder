@@ -1,4 +1,4 @@
-package com.mabi87.httprequestlib;
+package com.mabi87.httprequestbuilder;
 
 /**
  * Created by mabibak on 2015. 5. 13..

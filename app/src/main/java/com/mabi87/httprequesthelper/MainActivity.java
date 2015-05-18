@@ -24,144 +24,100 @@ package com.mabi87.httprequesthelper;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
-import com.mabi87.httprequestlib.HTTPRequestException;
-import com.mabi87.httprequestlib.HTTPRequestHelper;
-import com.mabi87.httprequestlib.HTTPRequestTask;
-
-import org.apache.http.NameValuePair;
+import com.mabi87.httprequestbuilder.HTTPRequestBuilder;
+import com.mabi87.httprequestbuilder.HTTPRequestException;
+import com.mabi87.httprequestbuilder.HTTPRequestTask;
 
 import java.io.IOException;
-import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity {
-    private Button mButtonPost;
-    private Button mButtonGet1;
-    private Button mButtonGet2;
+
+    // Layout Components
+    private EditText mInputUrl;
+    private EditText mInputKey;
+    private EditText mInputValue;
+    private RadioGroup mRadioGroupMethod;
     private TextView mTextResult;
+
+    // Components
+    private HTTPRequestBuilder mBuilder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        mBuilder = new HTTPRequestBuilder();
+        mBuilder.init();
+
         loadGUI();
-        bindEvent();
-        init();
     }
 
     private void loadGUI() {
         setContentView(R.layout.activity_main);
 
-        mButtonPost = (Button) findViewById(R.id.buttonPost);
-        mButtonGet1 = (Button) findViewById(R.id.buttonGet1);
-        mButtonGet2 = (Button) findViewById(R.id.buttonGet2);
+        mInputUrl = (EditText) findViewById(R.id.inputUrl);
+        mInputKey = (EditText) findViewById(R.id.inputKey);
+        mInputValue = (EditText) findViewById(R.id.inputValue);
+        mRadioGroupMethod = (RadioGroup) findViewById(R.id.radioGroupMethod);
         mTextResult = (TextView) findViewById(R.id.textResult);
     }
 
-    private void bindEvent() {
-        mButtonPost.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new HTTPRequestTask<Void, Void, String>() {
-                    @Override
-                    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
-                        ArrayList<NameValuePair> lNameValuePare = new ArrayList<NameValuePair>();
-                        HTTPRequestHelper lHelper = new HTTPRequestHelper();
-                        return lHelper.post("", lNameValuePare);
-                    }
+    public void onButtonAddClicked(View v) {
+        String key = mInputKey.getText().toString();
+        String value = mInputValue.getText().toString();
 
-                    @Override
-                    protected void onPostExecute(String s) {
-                        super.onPostExecute(s);
-
-                        if(s != null) {
-                            mTextResult.setText(s);
-                        }
-                    }
-
-                    @Override
-                    protected void onNetworkError(IOException pIOException) {
-                        mTextResult.setText(pIOException.getMessage());
-                    }
-
-                    @Override
-                    protected void onServerError(HTTPRequestException pHTTPRequestException) {
-                        mTextResult.setText(pHTTPRequestException.getMessage());
-                    }
-                }.execute();
-            }
-        });
-
-        mButtonGet1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new HTTPRequestTask<Void, Void, String>() {
-                    @Override
-                    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
-                        ArrayList<NameValuePair> lNameValuePare = new ArrayList<NameValuePair>();
-                        HTTPRequestHelper lHelper = new HTTPRequestHelper();
-                        return lHelper.get("", lNameValuePare);
-                    }
-
-                    @Override
-                    protected void onPostExecute(String s) {
-                        super.onPostExecute(s);
-
-                        if(s != null) {
-                            mTextResult.setText(s);
-                        }
-                    }
-
-                    @Override
-                    protected void onNetworkError(IOException pIOException) {
-                        mTextResult.setText(pIOException.getMessage());
-                    }
-
-                    @Override
-                    protected void onServerError(HTTPRequestException pHTTPRequestException) {
-                        mTextResult.setText(pHTTPRequestException.getMessage());
-                    }
-                }.execute();
-            }
-        });
-
-        mButtonGet2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new HTTPRequestTask<Void, Void, String>() {
-                    @Override
-                    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
-                        HTTPRequestHelper lHelper = new HTTPRequestHelper();
-                        return lHelper.setConnectTimeoutMillis(1000).setReadTimeoutMillis(1000).get("");
-                    }
-
-                    @Override
-                    protected void onPostExecute(String s) {
-                        super.onPostExecute(s);
-
-                        if(s != null) {
-                            mTextResult.setText(s);
-                        }
-                    }
-
-                    @Override
-                    protected void onNetworkError(IOException pIOException) {
-                        mTextResult.setText(pIOException.getMessage());
-                    }
-
-                    @Override
-                    protected void onServerError(HTTPRequestException pHTTPRequestException) {
-                        mTextResult.setText(pHTTPRequestException.getMessage());
-                    }
-                }.execute();
-            }
-        });
+        mBuilder.putParameter(key, value);
     }
 
-    private void init() {
+    public void onButtonSendClicked(View v) {
+        String url = mInputUrl.getText().toString();
+        mBuilder.setPath(url);
 
+        new HTTPRequestTask<Void, Void, String>() {
+            @Override
+            protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
+                int radioId = mRadioGroupMethod.getCheckedRadioButtonId();
+
+                switch(radioId) {
+                    case R.id.radioPost:
+                        return mBuilder.post();
+                    case R.id.radioGet:
+                        return mBuilder.get();
+                    default:
+                        return null;
+                }
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+
+                if(s != null) {
+                    mTextResult.setText(s);
+                }
+            }
+
+            @Override
+            protected void onNetworkError(IOException pIOException) {
+                mTextResult.setText(pIOException.getMessage());
+            }
+
+            @Override
+            protected void onServerError(HTTPRequestException pHTTPRequestException) {
+                mTextResult.setText(pHTTPRequestException.getMessage());
+            }
+
+        }.execute();
     }
+
+    public void onButtonCleanClicked(View v) {
+        mBuilder.init();
+        mTextResult.setText("");
+    }
+
 }

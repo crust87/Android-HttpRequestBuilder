@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HttpRequestHelper.iml" filepath="$PROJECT_DIR$/HttpRequestHelper.iml" />
-      <module fileurl="file://$PROJECT_DIR$/HttpRequestLib/HttpRequestLib.iml" filepath="$PROJECT_DIR$/HttpRequestLib/HttpRequestLib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/httpRequestBuilder/HttpRequestBuilder.iml" filepath="$PROJECT_DIR$/httpRequestBuilder/HttpRequestBuilder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/android-HttpRequestBuilder.iml" filepath="$PROJECT_DIR$/android-HttpRequestBuilder.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>

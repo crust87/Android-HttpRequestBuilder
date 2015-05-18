@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package com.mabi87.httprequestlib;
+package com.mabi87.httprequestbuilder;
 
 import android.os.AsyncTask;
 

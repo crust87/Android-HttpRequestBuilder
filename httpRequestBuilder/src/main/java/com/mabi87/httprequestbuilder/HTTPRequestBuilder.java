@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package com.mabi87.httprequestlib;
+package com.mabi87.httprequestbuilder;
 
 import android.util.Log;
 
@@ -39,8 +39,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HTTPRequestHelper {
-	private static final String TAG = "HTTPRequestHelper";
+public class HTTPRequestBuilder {
+	private static final String TAG = "HTTPRequestBuilder";
 
 	// Components
 	private ArrayList<NameValuePair> mParameters;
@@ -50,7 +50,7 @@ public class HTTPRequestHelper {
 	private int mReadTimeoutMillis;
 	private int mConnectTimeoutMillis;
 
-	public HTTPRequestHelper() {
+	public HTTPRequestBuilder() {
 		mParameters = new ArrayList<NameValuePair>();
 
 		init();
@@ -58,7 +58,6 @@ public class HTTPRequestHelper {
 
 	public void init() {
 		mParameters.clear();
-
 		mPath = "";
 		mReadTimeoutMillis = 10000;
 		mConnectTimeoutMillis = 15000;
@@ -129,7 +128,7 @@ public class HTTPRequestHelper {
 
 		lConnection.disconnect();
 
-		Log.d(TAG, "HTTPRequestHelper post : " + mPath + " " + lResponseStringBuilder.toString());
+		Log.d(TAG, "HTTPRequestBuilder post : " + mPath + " " + lResponseStringBuilder.toString());
 
 		if(isSuccess) {
 			return lResponseStringBuilder.toString();
@@ -153,11 +152,7 @@ public class HTTPRequestHelper {
 		mPath = path;
 		mParameters.addAll(parameters);
 
-		if(mParameters.size() > 0) {
-			return get(mPath + "?" + getQuery(mParameters));
-		} else {
-			return get(mPath);
-		}
+		return get();
 	}
 
 	/**
@@ -171,6 +166,7 @@ public class HTTPRequestHelper {
 	 */
 	public String get(String path) throws IOException, HTTPRequestException {
 		mPath = path;
+
 		return get();
 	}
 
@@ -182,7 +178,14 @@ public class HTTPRequestHelper {
 	 * @return the string of http page
 	 */
 	public String get() throws IOException, HTTPRequestException {
-		URL url = new URL(mPath);
+		URL url = null;
+
+		if(mParameters.size() > 0) {
+			url = new URL(mPath + "?" + getQuery(mParameters));
+		} else {
+			url = new URL(mPath);
+		}
+
 		HttpURLConnection lConnection = (HttpURLConnection) url.openConnection();
 
 		lConnection.setReadTimeout(mReadTimeoutMillis);
@@ -198,7 +201,7 @@ public class HTTPRequestHelper {
 
 		lConnection.disconnect();
 
-		Log.d(TAG, "HTTPRequestHelper get : " + mPath + " " + lResponseStringBuilder.toString());
+		Log.d(TAG, "HTTPRequestBuilder get : " + mPath + " " + lResponseStringBuilder.toString());
 
 		if(isSuccess) {
 			return lResponseStringBuilder.toString();
@@ -269,7 +272,7 @@ public class HTTPRequestHelper {
 	 * 				the list of parameters.
 	 * @return instance
 	 */
-	public HTTPRequestHelper putParameter(List<NameValuePair> parameters) {
+	public HTTPRequestBuilder putParameter(List<NameValuePair> parameters) {
 		mParameters.addAll(parameters);
 
 		return this;
@@ -282,7 +285,7 @@ public class HTTPRequestHelper {
 	 * 				the value of parameter.
 	 * @return instance
 	 */
-	public HTTPRequestHelper putParameter(String name, String value) {
+	public HTTPRequestBuilder putParameter(String name, String value) {
 		mParameters.add(new BasicNameValuePair(name, value));
 
 		return this;
@@ -293,7 +296,7 @@ public class HTTPRequestHelper {
 	 * 				the string url of web server page.
 	 * @return instance
 	 */
-	public HTTPRequestHelper setPath(String path) {
+	public HTTPRequestBuilder setPath(String path) {
 		mPath = path;
 
 		return this;
@@ -304,7 +307,7 @@ public class HTTPRequestHelper {
 	 * 				the millisecond in integer.
 	 * @return instance
 	 */
-	public HTTPRequestHelper setReadTimeoutMillis(int readTimeoutMillis) {
+	public HTTPRequestBuilder setReadTimeoutMillis(int readTimeoutMillis) {
 		mReadTimeoutMillis = readTimeoutMillis;
 
 		return this;
@@ -315,7 +318,7 @@ public class HTTPRequestHelper {
 	 * 				the millisecond in integer.
 	 * @return instance
 	 */
-	public HTTPRequestHelper setConnectTimeoutMillis(int connectTimeoutMillis) {
+	public HTTPRequestBuilder setConnectTimeoutMillis(int connectTimeoutMillis) {
 		mConnectTimeoutMillis = connectTimeoutMillis;
 
 		return this;

@@ -1,5 +1,5 @@
 /*
- * HttpRequestLib
+ * HttpRequestBuilder
  * https://github.com/mabi87/Android-HttpRequestBuilder
  *
  * Mabi

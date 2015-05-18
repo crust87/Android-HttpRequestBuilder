@@ -1,5 +1,5 @@
 /*
- * HttpRequestLib
+ * HttpRequestBuilder
  * https://github.com/mabi87/Android-HttpRequestBuilder
  *
  * Mabi
@@ -104,13 +104,13 @@ public class MainActivity extends ActionBarActivity {
             }
 
             @Override
-            protected void onNetworkError(IOException pIOException) {
-                mTextResult.setText(pIOException.getMessage());
+            protected void onNetworkError(String pExceptionMessage) {
+                mTextResult.setText(pExceptionMessage);
             }
 
             @Override
-            protected void onServerError(HTTPRequestException pHTTPRequestException) {
-                mTextResult.setText(pHTTPRequestException.getMessage());
+            protected void onServerError(String pExceptionMessage) {
+                mTextResult.setText(pExceptionMessage);
             }
 
         }.execute();

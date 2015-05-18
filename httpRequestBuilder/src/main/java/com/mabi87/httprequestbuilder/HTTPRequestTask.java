@@ -1,5 +1,5 @@
 /*
- * HttpRequestLib
+ * HttpRequestBuilder
  * https://github.com/mabi87/Android-HttpRequestBuilder
  *
  * Mabi
@@ -29,18 +29,18 @@ import java.io.IOException;
 public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>{
 
 	// Working variablesprivate boolean hasNetworkError = false;
-	private IOException mIOException = null;
-	private HTTPRequestException mHTTPRequestException = null;
+	private String mIOExceptionMessage = null;
+	private String mHTTPRequestExceptionMessage = null;
 
 	@Override
 	protected final Result doInBackground(Params... params) {
 		try {
 			return doInBackgroundRequest(params);
 		} catch (IOException e) {
-			mIOException = e;
+			mIOExceptionMessage = e.getMessage();
 			return null;
 		} catch (HTTPRequestException e) {
-			mHTTPRequestException = e;
+			mHTTPRequestExceptionMessage = e.getMessage();
 			return null;
 		}
 
@@ -48,28 +48,30 @@ public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTas
 
 	 @Override
 	 protected void onPostExecute(Result result) {
-		 if(mHTTPRequestException != null) {
-			 onServerError(mHTTPRequestException);
-			 mHTTPRequestException = null;
+		 if(mHTTPRequestExceptionMessage != null) {
+			 onServerError(mHTTPRequestExceptionMessage);
+			 mHTTPRequestExceptionMessage = null;
 		 }
 
-		 if(mIOException != null) {
-			 onNetworkError(mIOException);
-			 mIOException = null;
+		 if(mIOExceptionMessage != null) {
+			 onNetworkError(mIOExceptionMessage);
+			 mIOExceptionMessage = null;
 		 }
 	 }
 
 	 /**
-	  * this method work when catch json exception
-	  * @param pHTTPRequestException
+	  * this method work when catch http request exception
+	  * @param pExceptionMessage
+	  * 				Exception message
 	  */
-	 protected void onServerError(HTTPRequestException pHTTPRequestException) { }
+	 protected void onServerError(String pExceptionMessage) { }
 
 	 /**
 	  * this method work when catch io exception
-	  * @param pIOException
+	  * @param pExceptionMessage
+	  * 				Exception message
 	  */
-	 protected void onNetworkError(IOException pIOException) { }
+	 protected void onNetworkError(String pExceptionMessage) { }
 
 	 protected abstract Result doInBackgroundRequest(Params... params) throws IOException, HTTPRequestException;
 

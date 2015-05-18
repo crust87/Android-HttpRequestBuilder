@@ -29,7 +29,8 @@ with async
 ```java
 new HTTPRequestTask<Void, Void, String>() {
     @Override
-    protected String doInBackgroundRequest(Void... params) throws IOException, HTTPRequestException {
+    protected String doInBackgroundRequest(Void... params) 
+                                        throws IOException, HTTPRequestException {
         return mBuilder.post();
     }
 

@@ -56,6 +56,12 @@ new HTTPRequestTask<Void, Void, String>() {
 }.execute();
 ```
 
+clear url and parameters
+
+```java
+mBuilder.init();
+```
+
 ## Licence
 Copyright 2015 Mabi
 

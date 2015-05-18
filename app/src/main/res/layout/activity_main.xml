@@ -10,7 +10,6 @@
         android:layout_width="match_parent"
         android:layout_height="48dp"
         android:hint="type url"
-        android:text="http://192.168.123.135:8000"
         android:id="@+id/inputUrl" />
 
     <LinearLayout

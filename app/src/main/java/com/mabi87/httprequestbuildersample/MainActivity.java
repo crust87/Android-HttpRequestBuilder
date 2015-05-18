@@ -1,10 +1,10 @@
 /*
  * HttpRequestLib
- * https://github.com/mabi87/Android-HttpRequestHelper
+ * https://github.com/mabi87/Android-HttpRequestBuilder
  *
  * Mabi
  * crust87@gmail.com
- * last modify 2015-05-12
+ * last modify 2015-05-18
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,7 @@
  * limitations under the License.
  */
 
-package com.mabi87.httprequesthelper;
+package com.mabi87.httprequestbuildersample;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.mabi87.app.R;
 import com.mabi87.httprequestbuilder.HTTPRequestBuilder;
 import com.mabi87.httprequestbuilder.HTTPRequestException;
 import com.mabi87.httprequestbuilder.HTTPRequestTask;

@@ -1,6 +1,6 @@
 /*
  * HttpRequestLib
- * https://github.com/mabi87/Android-HttpRequestHelper
+ * https://github.com/mabi87/Android-HttpRequestBuilder
  *
  * Mabi
  * crust87@gmail.com

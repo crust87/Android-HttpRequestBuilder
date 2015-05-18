@@ -35,10 +35,10 @@ new HTTPRequestTask<Void, Void, String>() {
     }
 
     @Override
-    protected void onPostExecute(String s) {
-        super.onPostExecute(s);
+    protected void onPostExecute(String result) {
+        super.onPostExecute(result);
 
-        if(s != null) {
+        if(result != null) {
             // TODO
         }
     }

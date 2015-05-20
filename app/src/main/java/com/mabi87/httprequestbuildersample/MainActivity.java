@@ -95,11 +95,11 @@ public class MainActivity extends ActionBarActivity {
             }
 
             @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
+            protected void onPostExecute(String result) {
+                super.onPostExecute(result);
 
-                if(s != null) {
-                    mTextResult.setText(s);
+                if(result != null) {
+                    mTextResult.setText(result);
                 }
             }
 

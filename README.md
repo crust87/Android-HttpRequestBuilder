@@ -44,12 +44,12 @@ new HTTPRequestTask<Void, Void, String>() {
     }
 
     @Override
-    protected void onNetworkError(String pExceptionMessage) {
+    protected void onNetworkError(String exceptionMessage) {
         // TODO
     }
 
     @Override
-    protected void onServerError(String pExceptionMessage) {
+    protected void onRequestError(String exceptionMessage, int responseCode) {
         // TODO
     }
 

@@ -5,7 +5,20 @@ package com.mabi87.httprequestbuilder;
  */
 public class HTTPRequestException extends Exception {
 
-    public HTTPRequestException(String message) {
+    private int responseCode;
+
+    public HTTPRequestException(String message, int responseCode) {
         super(message);
+
+        this.responseCode = responseCode;
     }
+
+    public int getResponseCode() {
+        return responseCode;
+    }
+
+    public void setResponseCode(int responseCode) {
+        this.responseCode = responseCode;
+    }
+
 }

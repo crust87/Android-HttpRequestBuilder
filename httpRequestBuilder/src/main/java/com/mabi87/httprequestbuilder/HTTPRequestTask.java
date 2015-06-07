@@ -29,18 +29,18 @@ import java.io.IOException;
 public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTask<Params, Progress, Result>{
 
 	// Working variablesprivate boolean hasNetworkError = false;
-	private String mIOExceptionMessage = null;
-	private String mHTTPRequestExceptionMessage = null;
+	private IOException mIOException = null;
+	private HTTPRequestException mHTTPRequestException = null;
 
 	@Override
 	protected final Result doInBackground(Params... params) {
 		try {
 			return doInBackgroundRequest(params);
 		} catch (IOException e) {
-			mIOExceptionMessage = e.getMessage();
+			mIOException = e;
 			return null;
 		} catch (HTTPRequestException e) {
-			mHTTPRequestExceptionMessage = e.getMessage();
+			mHTTPRequestException = e;
 			return null;
 		}
 
@@ -48,30 +48,30 @@ public abstract class HTTPRequestTask<Params, Progress, Result> extends AsyncTas
 
 	 @Override
 	 protected void onPostExecute(Result result) {
-		 if(mHTTPRequestExceptionMessage != null) {
-			 onServerError(mHTTPRequestExceptionMessage);
-			 mHTTPRequestExceptionMessage = null;
+		 if(mHTTPRequestException != null) {
+			 onRequestError(mHTTPRequestException.getMessage(), mHTTPRequestException.getResponseCode());
+			 mHTTPRequestException = null;
 		 }
 
-		 if(mIOExceptionMessage != null) {
-			 onNetworkError(mIOExceptionMessage);
-			 mIOExceptionMessage = null;
+		 if(mIOException != null) {
+			 onNetworkError(mIOException.getMessage());
+			 mIOException = null;
 		 }
 	 }
 
 	 /**
 	  * this method work when catch http request exception
-	  * @param pExceptionMessage
+	  * @param exceptionMessage
 	  * 				Exception message
 	  */
-	 protected void onServerError(String pExceptionMessage) { }
+	 protected void onRequestError(String exceptionMessage, int responseCode) { }
 
 	 /**
 	  * this method work when catch io exception
-	  * @param pExceptionMessage
+	  * @param exceptionMessage
 	  * 				Exception message
 	  */
-	 protected void onNetworkError(String pExceptionMessage) { }
+	 protected void onNetworkError(String exceptionMessage) { }
 
 	 protected abstract Result doInBackgroundRequest(Params... params) throws IOException, HTTPRequestException;
 

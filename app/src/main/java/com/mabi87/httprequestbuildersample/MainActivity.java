@@ -104,13 +104,13 @@ public class MainActivity extends ActionBarActivity {
             }
 
             @Override
-            protected void onNetworkError(String pExceptionMessage) {
-                mTextResult.setText(pExceptionMessage);
+            protected void onNetworkError(String exceptionMessage) {
+                mTextResult.setText(exceptionMessage);
             }
 
             @Override
-            protected void onServerError(String pExceptionMessage) {
-                mTextResult.setText(pExceptionMessage);
+            protected void onRequestError(String exceptionMessage, int responseCode) {
+                mTextResult.setText(responseCode + ": " + exceptionMessage);
             }
 
         }.execute();

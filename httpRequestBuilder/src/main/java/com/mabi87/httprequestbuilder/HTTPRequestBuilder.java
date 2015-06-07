@@ -124,16 +124,17 @@ public class HTTPRequestBuilder {
 
 		StringBuilder lResponseStringBuilder = new StringBuilder();
 
-		boolean isSuccess = readPage(lConnection, lResponseStringBuilder);
+		int responseCode = readPage(lConnection, lResponseStringBuilder);
+		String responseString = lResponseStringBuilder.toString();
 
 		lConnection.disconnect();
 
 		Log.d(TAG, "HTTPRequestBuilder post : " + mPath + " " + lResponseStringBuilder.toString());
 
-		if(isSuccess) {
-			return lResponseStringBuilder.toString();
+		if(responseCode == HttpURLConnection.HTTP_OK) {
+			return responseString;
 		} else {
-			throw new HTTPRequestException(lResponseStringBuilder.toString());
+			throw new HTTPRequestException(responseString, responseCode);
 		}
 	}
 
@@ -197,16 +198,17 @@ public class HTTPRequestBuilder {
 
 		StringBuilder lResponseStringBuilder = new StringBuilder();
 
-		boolean isSuccess = readPage(lConnection, lResponseStringBuilder);
+		int responseCode = readPage(lConnection, lResponseStringBuilder);
+		String responseString = lResponseStringBuilder.toString();
 
 		lConnection.disconnect();
 
 		Log.d(TAG, "HTTPRequestBuilder get : " + mPath + " " + lResponseStringBuilder.toString());
 
-		if(isSuccess) {
-			return lResponseStringBuilder.toString();
+		if(responseCode == HttpURLConnection.HTTP_OK) {
+			return responseString;
 		} else {
-			throw new HTTPRequestException(lResponseStringBuilder.toString());
+			throw new HTTPRequestException(responseString, responseCode);
 		}
 	}
 
@@ -217,14 +219,16 @@ public class HTTPRequestBuilder {
 	 * 				the response StringBuilder for store connection response
 	 * @throws IOException
 	 * 				throws from HttpURLConnection method.
-	 * @return if response cod is 200
+	 * @return the Integer value of response code
 	 */
-	public boolean readPage(HttpURLConnection connection, StringBuilder responseStringBuilder) throws IOException {
+	public int readPage(HttpURLConnection connection, StringBuilder responseStringBuilder) throws IOException {
 		BufferedReader lBufferedReader = null;
 		String lLine = null;
 		boolean isSuccess = false;
+		int responseCode = connection.getResponseCode();
 
-		isSuccess = connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+
+		isSuccess = responseCode == HttpURLConnection.HTTP_OK;
 
 		if(isSuccess) {
 			lBufferedReader= new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -238,7 +242,7 @@ public class HTTPRequestBuilder {
 
 		lBufferedReader.close();
 
-		return isSuccess;
+		return responseCode;
 	}
 
 	/**

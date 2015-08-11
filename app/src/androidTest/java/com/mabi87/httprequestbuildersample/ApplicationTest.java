@@ -1,4 +1,4 @@
-package com.mabi87.app;
+package com.mabi87.httprequestbuildersample;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

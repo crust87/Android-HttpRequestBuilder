@@ -20,13 +20,13 @@ builder.putParameter(name2, value2);
 builder.setMethod("POST"); // or "GET"
 ```
 
-// build and get request object
+build and get request object
 ```java
 HTTPRequest request = builder.build();
 ```
 
-// request
-// you MUST NOT use this method in UI thread
+request<br/>
+you MUST NOT use this method in UI thread
 ```java
 HTTPResponse response = request.request();
 ```

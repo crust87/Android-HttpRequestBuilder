@@ -37,7 +37,7 @@ String responseMessage = response.getResponseMessage();
 String errorMessage = response.getErrorMessage();
 ```
 
-## Licence
+## License
 Copyright 2015 Mabi
 
 Licensed under the Apache License, Version 2.0 (the "License");<br/>

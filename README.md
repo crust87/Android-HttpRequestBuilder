@@ -1,5 +1,6 @@
-# Android-HttpRequestBuilder
-HttpRequestBuilder is builder using HttpURLConnection.
+# Android-HttpRequestBuilder DEPRECATED
+HttpRequestBuilder is builder using HttpURLConnection.<br/>
+no more commit.
 
 ## Example
 
